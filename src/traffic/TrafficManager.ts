@@ -1,11 +1,12 @@
 import * as THREE from 'three';
-import { TrafficCar, TRAFFIC_CAR_COUNT, TRAFFIC_CAR_SPEED } from './types';
+import { TrafficCar, TRAFFIC_CAR_COUNT, TRAFFIC_CAR_SPEED, CAR_COLORS } from './types';
 import { CHUNK_SIZE } from '../chunk/types';
 
 export class TrafficManager extends THREE.Group {
   private cars: TrafficCar[];
   private instancedMesh: THREE.InstancedMesh;
   private dummy: THREE.Object3D;
+  private frameCount: number = 0;
 
   constructor() {
     super();
@@ -20,6 +21,9 @@ export class TrafficManager extends THREE.Group {
         laneDir: 'x',
         lanePos: 0,
         speed: TRAFFIC_CAR_SPEED,
+        baseSpeed: TRAFFIC_CAR_SPEED,
+        scale: 1.0,
+        color: new THREE.Color(0x0000ff),
         active: false,
         honking: false,
         honkTime: 0
@@ -61,16 +65,39 @@ export class TrafficManager extends THREE.Group {
    */
   update(deltaTime: number, playerPosition: THREE.Vector3): void {
     const currentTime = performance.now();
+    this.frameCount++;
 
-    // Update car movement
+    // Update car movement with distance-based update frequency
     for (let i = 0; i < this.cars.length; i++) {
       const car = this.cars[i];
       if (!car.active) continue;
 
-      // Reset speed to normal
-      car.speed = TRAFFIC_CAR_SPEED;
+      // Distance-based update frequency optimization
+      const distanceToPlayer = car.position.distanceTo(playerPosition);
+      let shouldUpdateThisFrame = true;
 
-      // Task 1: Car-to-car collision avoidance
+      if (distanceToPlayer > 200) {
+        // Far cars: update every 4th frame
+        shouldUpdateThisFrame = (this.frameCount + i) % 4 === 0;
+      } else if (distanceToPlayer > 100) {
+        // Medium distance: update every 2nd frame
+        shouldUpdateThisFrame = (this.frameCount + i) % 2 === 0;
+      }
+      // Close cars (<100): update every frame
+
+      if (!shouldUpdateThisFrame) {
+        continue;
+      }
+
+      // Reset speed to car's base speed (varies per car)
+      car.speed = car.baseSpeed;
+
+      // Intersection yielding: Z-lane cars yield to X-lane cars
+      if (this.shouldYieldAtIntersection(car, i)) {
+        car.speed = 0;
+      }
+
+      // Car-to-car collision avoidance
       const carAhead = this.findCarAhead(i);
       if (carAhead) {
         const distanceAhead = this.getDistanceAhead(car, carAhead);
@@ -81,13 +108,12 @@ export class TrafficManager extends THREE.Group {
           } else {
             // Proportional slowdown: closer = slower
             const slowdownFactor = (distanceAhead - 5) / (15 - 5); // 0 to 1
-            car.speed = TRAFFIC_CAR_SPEED * slowdownFactor;
+            car.speed = car.baseSpeed * slowdownFactor;
           }
         }
       }
 
-      // Task 2: Player avoidance and honking
-      const distanceToPlayer = car.position.distanceTo(playerPosition);
+      // Player avoidance and honking (reuse distanceToPlayer from update frequency check)
       const playerInPath = this.isPlayerInPath(car, playerPosition);
 
       if (playerInPath && distanceToPlayer < 20) {
@@ -122,18 +148,19 @@ export class TrafficManager extends THREE.Group {
         car.rotation = direction > 0 ? 0 : Math.PI;
       }
 
-      // Update instanced mesh matrix with color change for honking
+      // Update instanced mesh matrix with scale and color
       this.dummy.position.copy(car.position);
-      this.dummy.position.y = 0.5; // Ensure car is at correct height
+      this.dummy.position.y = 0.5 * car.scale; // Adjust height for scale
       this.dummy.rotation.y = car.rotation;
+      this.dummy.scale.setScalar(car.scale);
       this.dummy.updateMatrix();
       this.instancedMesh.setMatrixAt(i, this.dummy.matrix);
 
-      // Visual honking indicator: flash color
+      // Visual honking indicator: flash red, otherwise use car's color
       if (car.honking) {
         this.instancedMesh.setColorAt(i, new THREE.Color(0xff0000)); // Red when honking
       } else {
-        this.instancedMesh.setColorAt(i, new THREE.Color(0x0000ff)); // Blue normal
+        this.instancedMesh.setColorAt(i, car.color);
       }
     }
 
@@ -214,6 +241,11 @@ export class TrafficManager extends THREE.Group {
       const car = this.cars[carIndex];
       car.active = true;
 
+      // Randomize car appearance and behavior
+      car.color = new THREE.Color(CAR_COLORS[Math.floor(Math.random() * CAR_COLORS.length)]);
+      car.baseSpeed = 12 + Math.random() * 6; // 12-18 speed range
+      car.scale = 0.8 + Math.random() * 0.4; // 0.8-1.2 scale range
+
       // 50% chance horizontal lane, 50% vertical lane
       const isHorizontal = Math.random() < 0.5;
 
@@ -257,7 +289,7 @@ export class TrafficManager extends THREE.Group {
         }
       }
 
-      car.speed = TRAFFIC_CAR_SPEED;
+      car.speed = car.baseSpeed;
     }
   }
 
@@ -374,5 +406,80 @@ export class TrafficManager extends THREE.Group {
         return position.z < car.position.z;
       }
     }
+  }
+
+  /**
+   * Check if car is near an intersection
+   * Intersections are at chunk-relative positions: (0,0), (0,32), (32,0), (32,32)
+   * Returns the intersection position if within approach distance
+   */
+  private getNearbyIntersection(car: TrafficCar): THREE.Vector3 | null {
+    // Road grid positions within chunk: 0 and 32
+    const roadPositions = [0, 32];
+    const approachDistance = 10;
+
+    // Check each possible intersection
+    for (const roadX of roadPositions) {
+      for (const roadZ of roadPositions) {
+        // Calculate the intersection world position
+        // Car's chunk position determines which intersection set to check
+        const chunkX = Math.floor(car.position.x / CHUNK_SIZE);
+        const chunkZ = Math.floor(car.position.z / CHUNK_SIZE);
+
+        const intersectionX = chunkX * CHUNK_SIZE + roadX;
+        const intersectionZ = chunkZ * CHUNK_SIZE + roadZ;
+
+        // Check distance to intersection
+        const dx = Math.abs(car.position.x - intersectionX);
+        const dz = Math.abs(car.position.z - intersectionZ);
+
+        if (dx < approachDistance && dz < approachDistance) {
+          return new THREE.Vector3(intersectionX, 0, intersectionZ);
+        }
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * Check if a Z-lane car should yield at an intersection
+   * Rule: Z-lane cars yield to X-lane cars (right-of-way)
+   */
+  private shouldYieldAtIntersection(car: TrafficCar, carIndex: number): boolean {
+    // Only Z-lane cars need to yield
+    if (car.laneDir !== 'z') return false;
+
+    const intersection = this.getNearbyIntersection(car);
+    if (!intersection) return false;
+
+    // Check if car is approaching (not already in) the intersection
+    const direction = Math.sign(car.velocity.z);
+    const distanceToIntersection = direction > 0
+      ? intersection.z - car.position.z
+      : car.position.z - intersection.z;
+
+    // Only yield if approaching (not past the intersection center)
+    if (distanceToIntersection < 0 || distanceToIntersection > 10) return false;
+
+    // Check for any X-lane cars within 15 units of this intersection
+    const checkDistance = 15;
+    for (let i = 0; i < this.cars.length; i++) {
+      if (i === carIndex || !this.cars[i].active) continue;
+
+      const otherCar = this.cars[i];
+      if (otherCar.laneDir !== 'x') continue;
+
+      // Check if the X-lane car is near this intersection
+      const otherDx = Math.abs(otherCar.position.x - intersection.x);
+      const otherDz = Math.abs(otherCar.position.z - intersection.z);
+
+      // X-lane car is a threat if it's within range of the intersection
+      if (otherDx < checkDistance && otherDz < 6) {
+        return true; // Yield!
+      }
+    }
+
+    return false;
   }
 }
