@@ -9,6 +9,11 @@ interface CarPhysics {
   turnSpeed: number;
   friction: number;
   boundingBox: THREE.Box3;
+  boostMultiplier: number;
+  boostFuel: number;
+  boostRechargeRate: number;
+  boostDrainRate: number;
+  isBoosting: boolean;
 }
 
 const carPhysicsMap = new WeakMap<THREE.Group, CarPhysics>();
@@ -73,6 +78,11 @@ export function createCar(): THREE.Group {
     turnSpeed: 2.5,
     friction: 0.95,
     boundingBox,
+    boostMultiplier: 1.8,
+    boostFuel: 1.0,
+    boostRechargeRate: 0.2,
+    boostDrainRate: 0.5,
+    isBoosting: false,
   });
 
   return car;
@@ -86,11 +96,32 @@ export function updateCar(
   const physics = carPhysicsMap.get(car);
   if (!physics) return;
 
+  // Boost management
+  if (input.boost && physics.boostFuel > 0) {
+    physics.isBoosting = true;
+    physics.boostFuel -= physics.boostDrainRate * deltaTime;
+    physics.boostFuel = Math.max(0, physics.boostFuel);
+  } else {
+    physics.isBoosting = false;
+    physics.boostFuel = Math.min(1, physics.boostFuel + physics.boostRechargeRate * deltaTime);
+  }
+
+  // Determine effective values (with or without boost)
+  const effectiveMaxSpeed = physics.isBoosting
+    ? physics.maxSpeed * physics.boostMultiplier
+    : physics.maxSpeed;
+  const effectiveAcceleration = physics.isBoosting
+    ? physics.acceleration * 2.0  // Double acceleration during boost
+    : physics.acceleration;
+  const effectiveFriction = physics.isBoosting
+    ? 0.98  // Less friction during boost (0.95 -> 0.98)
+    : physics.friction;
+
   // Acceleration
   if (input.forward) {
     physics.speed = Math.min(
-      physics.speed + physics.acceleration * deltaTime,
-      physics.maxSpeed
+      physics.speed + effectiveAcceleration * deltaTime,
+      effectiveMaxSpeed
     );
   } else if (input.backward) {
     physics.speed = Math.max(
@@ -100,7 +131,7 @@ export function updateCar(
   }
 
   // Friction
-  physics.speed *= physics.friction;
+  physics.speed *= effectiveFriction;
 
   // Stop completely when speed is very low
   if (Math.abs(physics.speed) < 0.01) {
@@ -226,4 +257,11 @@ export function applyBounce(
   car.position.add(
     pushDirection.clone().multiplyScalar(penetrationDepth + 0.1)
   );
+}
+
+/**
+ * Get car physics state for external access
+ */
+export function getCarPhysics(car: THREE.Group): CarPhysics | undefined {
+  return carPhysicsMap.get(car);
 }

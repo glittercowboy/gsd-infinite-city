@@ -1,11 +1,21 @@
 import * as THREE from 'three';
-import { createCar, updateCar, checkCollision, applyBounce } from './car';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+import { createCar, updateCar, checkCollision, applyBounce, getCarPhysics } from './car';
 import { initInput, getInputState } from './input';
 import { ChunkManager } from './chunk/ChunkManager';
 import { TrafficManager } from './traffic/TrafficManager';
 import { DayNightCycle } from './daynight';
+import { RadialBlurShader } from './shaders/radialBlur';
 
 export function setupScene(container: HTMLElement): void {
+  // Shake state
+  let shakeIntensity = 0;
+  const shakeDecay = 5; // How fast shake fades (per second)
+  const maxShakeOffset = 0.3; // Maximum camera offset in units
+
   // Renderer
   const renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setSize(window.innerWidth, window.innerHeight);
@@ -25,6 +35,15 @@ export function setupScene(container: HTMLElement): void {
   );
   camera.position.set(0, 5, 10);
   camera.lookAt(0, 0, 0);
+
+  // Effect Composer
+  const composer = new EffectComposer(renderer);
+  composer.addPass(new RenderPass(scene, camera));
+
+  const radialBlurPass = new ShaderPass(RadialBlurShader);
+  composer.addPass(radialBlurPass);
+
+  composer.addPass(new OutputPass());
 
   // Fog
   scene.fog = new THREE.Fog(0x87CEEB, 100, 300);
@@ -104,6 +123,7 @@ export function setupScene(container: HTMLElement): void {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
+    composer.setSize(window.innerWidth, window.innerHeight);
   }
   window.addEventListener('resize', onWindowResize);
 
@@ -202,6 +222,8 @@ export function setupScene(container: HTMLElement): void {
     const collision = checkCollision(car, colliders);
     if (collision) {
       applyBounce(car, collision);
+      // Trigger shake based on collision severity (penetration depth)
+      shakeIntensity = Math.min(1, collision.penetrationDepth * 0.5);
     }
 
     // Update chunks based on car position
@@ -210,13 +232,42 @@ export function setupScene(container: HTMLElement): void {
     // Update traffic
     trafficManager.update(deltaTime, car.position);
 
+    // Update radial blur based on speed
+    const physics = getCarPhysics(car);
+    if (physics) {
+      // Start blur earlier and make it more visible during boost
+      const speedRatio = Math.abs(physics.speed) / physics.maxSpeed;
+      const blurThreshold = 0.3; // Start blur at 30% speed
+      const blurIntensity = Math.max(0, (speedRatio - blurThreshold) / (1 - blurThreshold));
+
+      // Strong boost bonus for visible effect
+      const boostBonus = physics.isBoosting ? 0.5 : 0;
+
+      const finalIntensity = Math.min(1, blurIntensity + boostBonus);
+      radialBlurPass.uniforms.intensity.value = finalIntensity;
+    }
+
+    // Decay shake
+    if (shakeIntensity > 0) {
+      shakeIntensity = Math.max(0, shakeIntensity - shakeDecay * deltaTime);
+    }
+
     // Camera follows car
     const cameraOffset = new THREE.Vector3(0, 3.5, 10);
     cameraOffset.applyQuaternion(car.quaternion);
     camera.position.copy(car.position).add(cameraOffset);
+
+    // Apply shake offset (random within intensity)
+    if (shakeIntensity > 0) {
+      const shakeX = (Math.random() - 0.5) * 2 * maxShakeOffset * shakeIntensity;
+      const shakeY = (Math.random() - 0.5) * 2 * maxShakeOffset * shakeIntensity;
+      camera.position.x += shakeX;
+      camera.position.y += shakeY;
+    }
+
     camera.lookAt(car.position);
 
-    renderer.render(scene, camera);
+    composer.render();
   }
 
   animate();

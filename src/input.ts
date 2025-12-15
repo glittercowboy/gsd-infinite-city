@@ -3,17 +3,22 @@ export interface InputState {
   backward: boolean;
   left: boolean;
   right: boolean;
+  boost: boolean;
 }
 
 const inputState: InputState = {
   forward: false,
   backward: false,
   left: false,
-  right: false
+  right: false,
+  boost: false
 };
 
 export function initInput(): void {
   window.addEventListener('keydown', (e) => {
+    if (e.key === 'Shift') {
+      inputState.boost = true;
+    }
     switch (e.key.toLowerCase()) {
       case 'w':
       case 'arrowup':
@@ -35,6 +40,9 @@ export function initInput(): void {
   });
 
   window.addEventListener('keyup', (e) => {
+    if (e.key === 'Shift') {
+      inputState.boost = false;
+    }
     switch (e.key.toLowerCase()) {
       case 'w':
       case 'arrowup':

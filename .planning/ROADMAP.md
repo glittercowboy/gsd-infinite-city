@@ -46,10 +46,10 @@ Plans:
 **Goal**: Add nitrous boost (shift key), subtle screen shake on collision, speed-based motion blur
 **Depends on**: Phase 6
 **Research**: Unlikely (Three.js post-processing)
-**Plans**: TBD
+**Plans**: 1/1 complete
 
 Plans:
-- [ ] 07-01: TBD
+- [x] 07-01: Nitrous boost, screen shake, radial blur
 
 ### Phase 8: Vehicle Overhaul
 **Goal**: Smooth curved car geometry, distinct traffic types (sedan/SUV/truck), wheels, headlights, functional brakelights
@@ -99,7 +99,7 @@ Plans:
 | 4. Traffic AI | v1.0 | 3/3 | Complete | 2025-12-15 |
 | 5. Visuals & Deploy | v1.0 | 1/1 | Complete | 2025-12-15 |
 | 6. Quick Fixes + Atmosphere | v1.1 | 1/1 | Complete | 2025-12-15 |
-| 7. Gameplay Feel | v1.1 | 0/? | Not started | - |
+| 7. Gameplay Feel | v1.1 | 1/1 | Complete | 2025-12-15 |
 | 8. Vehicle Overhaul | v1.1 | 0/? | Not started | - |
 | 9. Traffic Intelligence | v1.1 | 0/? | Not started | - |
 | 10. Building Variety | v1.1 | 0/? | Not started | - |
