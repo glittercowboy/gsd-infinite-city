@@ -37,10 +37,10 @@ See [v1.0 archive](milestones/v1.0-ROADMAP.md) for full details.
 **Goal**: Fix tree spawn padding, implement full celestial system (sun/moon with phases, stars, sunrise/sunset glow, directional lighting)
 **Depends on**: Phase 5
 **Research**: Unlikely (internal patterns)
-**Plans**: TBD
+**Plans**: 1/1 complete
 
 Plans:
-- [ ] 06-01: TBD
+- [x] 06-01: Tree road padding fix + celestial system (sun/moon/stars)
 
 ### Phase 7: Gameplay Feel
 **Goal**: Add nitrous boost (shift key), subtle screen shake on collision, speed-based motion blur
@@ -98,7 +98,7 @@ Plans:
 | 3. Driving & Collision | v1.0 | 1/1 | Complete | 2025-12-15 |
 | 4. Traffic AI | v1.0 | 3/3 | Complete | 2025-12-15 |
 | 5. Visuals & Deploy | v1.0 | 1/1 | Complete | 2025-12-15 |
-| 6. Quick Fixes + Atmosphere | v1.1 | 0/? | Not started | - |
+| 6. Quick Fixes + Atmosphere | v1.1 | 1/1 | Complete | 2025-12-15 |
 | 7. Gameplay Feel | v1.1 | 0/? | Not started | - |
 | 8. Vehicle Overhaul | v1.1 | 0/? | Not started | - |
 | 9. Traffic Intelligence | v1.1 | 0/? | Not started | - |
