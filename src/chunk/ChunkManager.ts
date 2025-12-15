@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { ChunkCoord, Chunk, CHUNK_SIZE, VIEW_DISTANCE, CACHE_DISTANCE } from './types';
 import { createSeededRandom, hashCoord } from './SeededRandom';
 import { generateRoads, createRoadMeshes } from './RoadGenerator';
+import { generateBuildings, createBuildingMeshes } from './BuildingGenerator';
 
 export class ChunkManager {
   private scene: THREE.Scene;
@@ -90,6 +91,10 @@ export class ChunkManager {
     const roadSegments = generateRoads(coord, rng);
     createRoadMeshes(roadSegments, group, worldX, worldZ);
 
+    // Generate and add buildings
+    const buildings = generateBuildings(coord, roadSegments, rng);
+    createBuildingMeshes(buildings, group, worldX, worldZ);
+
     this.scene.add(group);
 
     // Store chunk
@@ -112,9 +117,20 @@ export class ChunkManager {
     // Remove from scene
     this.scene.remove(chunk.group);
 
-    // Dispose of all geometries and materials
+    // Dispose of all geometries and materials (including InstancedMesh)
     chunk.group.traverse((object) => {
-      if (object instanceof THREE.Mesh) {
+      if (object instanceof THREE.InstancedMesh) {
+        if (object.geometry) {
+          object.geometry.dispose();
+        }
+        if (object.material) {
+          if (Array.isArray(object.material)) {
+            object.material.forEach(material => material.dispose());
+          } else {
+            object.material.dispose();
+          }
+        }
+      } else if (object instanceof THREE.Mesh) {
         if (object.geometry) {
           object.geometry.dispose();
         }

@@ -22,3 +22,12 @@ export const VIEW_DISTANCE = 3;
 export const CACHE_DISTANCE = 5;
 export const ROAD_WIDTH = 8;
 export const BLOCK_SIZE = 32;
+export const BUILDING_SETBACK = 2;
+
+export interface BuildingData {
+  position: { x: number; z: number };
+  width: number;
+  depth: number;
+  height: number;
+  color: number;
+}

@@ -19,18 +19,18 @@
 ## Current Position
 
 Phase: 2 of 6 (Procedural City)
-Plan: 2 of ? in current phase
+Plan: 3 of ? in current phase
 Status: In progress
-Last activity: 2025-12-15 - Completed 01.1-01-PLAN.md (car speed increase)
+Last activity: 2025-12-15 - Completed 02-03-PLAN.md (building generation)
 
-Progress: ██░░░░░░░░ 30%
+Progress: ███░░░░░░░ 40%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 4
+- Total plans completed: 5
 - Average duration: 5 min
-- Total execution time: 21 min
+- Total execution time: 25 min
 
 **By Phase:**
 
@@ -38,10 +38,10 @@ Progress: ██░░░░░░░░ 30%
 |-------|-------|-------|----------|
 | 1. Foundation | 1 | 4 min | 4 min |
 | 1.1 Car Speed | 1 | <1 min | <1 min |
-| 2. Procedural City | 2 | 16 min | 8 min |
+| 2. Procedural City | 3 | 20 min | 7 min |
 
 **Recent Trend:**
-- Last 5 plans: 4 min, 12 min, 4 min, <1 min
+- Last 5 plans: 4 min, 12 min, 4 min, <1 min, 4 min
 - Trend: Stable
 
 *Updated after each plan completion*
@@ -62,6 +62,8 @@ Progress: ██░░░░░░░░ 30%
 | P2 | View distance 3, cache 5 | Hysteresis prevents chunk thrashing |
 | P2 | Fog 100-300 units | Hides chunk edges without claustrophobia |
 | P2 | Fixed grid roads (no variation) | Roads must align across chunks; variation via districts instead |
+| P2 | Squared height distribution | Most buildings short (10-25), occasional towers (up to 60) |
+| P2 | One InstancedMesh per chunk | Batches all buildings into single draw call |
 
 ### Deferred Issues
 
@@ -85,5 +87,5 @@ Drift notes: None
 ## Session Continuity
 
 Last session: 2025-12-15
-Stopped at: Completed 01.1-01-PLAN.md (car speed increase)
+Stopped at: Completed 02-03-PLAN.md (building generation)
 Resume file: None
