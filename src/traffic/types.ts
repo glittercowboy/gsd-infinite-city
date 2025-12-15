@@ -8,6 +8,8 @@ export interface TrafficCar {
   lanePos: number;
   speed: number;
   active: boolean;
+  honking: boolean;
+  honkTime: number;
 }
 
 export const TRAFFIC_CAR_COUNT = 100;

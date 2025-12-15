@@ -19,18 +19,18 @@
 ## Current Position
 
 Phase: 4 of 6 (Traffic AI)
-Plan: 1 of ? in current phase
+Plan: 2 of 3 in current phase
 Status: In progress
-Last activity: 2025-12-15 - Completed 04-01-PLAN.md (traffic manager foundation)
+Last activity: 2025-12-15 - Completed 04-02-PLAN.md (collision avoidance, player reactions)
 
-Progress: ███████░░░ 70%
+Progress: ████████░░ 80%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 8
-- Average duration: 6 min
-- Total execution time: 45 min
+- Total plans completed: 9
+- Average duration: 7 min
+- Total execution time: 62 min
 
 **By Phase:**
 
@@ -40,11 +40,11 @@ Progress: ███████░░░ 70%
 | 1.1 Car Speed | 1 | <1 min | <1 min |
 | 2. Procedural City | 4 | 29 min | 7 min |
 | 3. Driving & Collision | 1 | 9 min | 9 min |
-| 4. Traffic AI | 1 | 2 min | 2 min |
+| 4. Traffic AI | 2 | 19 min | 10 min |
 
 **Recent Trend:**
-- Last 5 plans: <1 min, 4 min, 9 min, 9 min, 2 min
-- Trend: Stable
+- Last 5 plans: 4 min, 9 min, 9 min, 2 min, 17 min
+- Trend: Stable (04-02 had debugging)
 
 *Updated after each plan completion*
 
@@ -74,8 +74,11 @@ Progress: ███████░░░ 70%
 | P3 | Trunk-only tree collision | 0.5 radius, 35% height - foliage doesn't block |
 | P3 | XZ-plane collision response | Prevents car sinking into ground |
 | P4 | InstancedMesh for traffic | Single draw call for 100 AI cars |
-| P4 | Lane offsets [4,28,36,60] | Two lanes per road, right-hand traffic |
-| P4 | Spawn at VIEW_DISTANCE, despawn at CACHE_DISTANCE | Hysteresis prevents car thrashing |
+| P4 | Lane offsets [-2,2,30,34] | Two lanes per road centered on road grid |
+| P4 | frustumCulled=false for traffic | Instances scattered - default culling breaks |
+| P4 | Count-based respawning | Spawn if chunk <2 cars, keeps traffic persistent |
+| P4 | Brake-only player avoidance | Swerve caused shaking, removed |
+| P4 | No player-traffic collision | Traffic avoids player, more realistic feel |
 
 ### Deferred Issues
 
@@ -99,5 +102,5 @@ Drift notes: None
 ## Session Continuity
 
 Last session: 2025-12-15
-Stopped at: Completed 04-01-PLAN.md (traffic manager foundation)
+Stopped at: Completed 04-02-PLAN.md (collision avoidance, player reactions)
 Resume file: None
