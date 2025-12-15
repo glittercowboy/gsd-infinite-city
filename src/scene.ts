@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { createCar, updateCar, checkCollision, applyBounce } from './car';
 import { initInput, getInputState } from './input';
 import { ChunkManager } from './chunk/ChunkManager';
+import { TrafficManager } from './traffic/TrafficManager';
 
 export function setupScene(container: HTMLElement): void {
   // Renderer
@@ -38,6 +39,10 @@ export function setupScene(container: HTMLElement): void {
 
   // Chunk Manager
   const chunkManager = new ChunkManager(scene, 12345);
+
+  // Traffic Manager
+  const trafficManager = new TrafficManager();
+  scene.add(trafficManager);
 
   // Car
   const car = createCar();
@@ -76,6 +81,9 @@ export function setupScene(container: HTMLElement): void {
 
     // Update chunks based on car position
     chunkManager.update(car.position);
+
+    // Update traffic
+    trafficManager.update(deltaTime, car.position);
 
     // Camera follows car
     const cameraOffset = new THREE.Vector3(0, 5, 10);

@@ -18,19 +18,19 @@
 
 ## Current Position
 
-Phase: 3 of 6 (Driving & Collision) - COMPLETE
-Plan: 1 of 1 in current phase
-Status: Phase complete
-Last activity: 2025-12-15 - Completed 03-01-PLAN.md (collision detection)
+Phase: 4 of 6 (Traffic AI)
+Plan: 1 of ? in current phase
+Status: In progress
+Last activity: 2025-12-15 - Completed 04-01-PLAN.md (traffic manager foundation)
 
-Progress: ██████░░░░ 60%
+Progress: ███████░░░ 70%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 7
+- Total plans completed: 8
 - Average duration: 6 min
-- Total execution time: 43 min
+- Total execution time: 45 min
 
 **By Phase:**
 
@@ -40,9 +40,10 @@ Progress: ██████░░░░ 60%
 | 1.1 Car Speed | 1 | <1 min | <1 min |
 | 2. Procedural City | 4 | 29 min | 7 min |
 | 3. Driving & Collision | 1 | 9 min | 9 min |
+| 4. Traffic AI | 1 | 2 min | 2 min |
 
 **Recent Trend:**
-- Last 5 plans: 4 min, <1 min, 4 min, 9 min, 9 min
+- Last 5 plans: <1 min, 4 min, 9 min, 9 min, 2 min
 - Trend: Stable
 
 *Updated after each plan completion*
@@ -72,6 +73,9 @@ Progress: ██████░░░░ 60%
 | P3 | Square car collision box (4x4) | Handles rotation without OBB complexity |
 | P3 | Trunk-only tree collision | 0.5 radius, 35% height - foliage doesn't block |
 | P3 | XZ-plane collision response | Prevents car sinking into ground |
+| P4 | InstancedMesh for traffic | Single draw call for 100 AI cars |
+| P4 | Lane offsets [4,28,36,60] | Two lanes per road, right-hand traffic |
+| P4 | Spawn at VIEW_DISTANCE, despawn at CACHE_DISTANCE | Hysteresis prevents car thrashing |
 
 ### Deferred Issues
 
@@ -95,5 +99,5 @@ Drift notes: None
 ## Session Continuity
 
 Last session: 2025-12-15
-Stopped at: Completed 03-01-PLAN.md (collision detection) - Phase 3 COMPLETE
+Stopped at: Completed 04-01-PLAN.md (traffic manager foundation)
 Resume file: None

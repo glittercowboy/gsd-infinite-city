@@ -65,5 +65,5 @@ None (no Three.js/web game domain expertise available)
 | 1.1 Car Speed Increase | 1/1 | Complete | 2025-12-15 |
 | 2. Procedural City | 4/4 | Complete | 2025-12-15 |
 | 3. Driving & Collision | 1/1 | Complete | 2025-12-15 |
-| 4. Traffic AI | 0/? | Not started | - |
+| 4. Traffic AI | 1/? | In progress | - |
 | 5. Visuals & Deploy | 0/? | Not started | - |
