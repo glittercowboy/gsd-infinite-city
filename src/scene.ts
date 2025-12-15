@@ -73,14 +73,14 @@ export function setupScene(container: HTMLElement): void {
   const starPositions = new Float32Array(starCount * 3);
 
   for (let i = 0; i < starCount; i++) {
-    // Random points on a sphere (radius 200)
-    const theta = Math.random() * Math.PI * 2;
-    const phi = Math.acos(2 * Math.random() - 1);
+    // Random points on upper hemisphere (radius 200, Y-up)
+    const theta = Math.random() * Math.PI * 2;    // 0 to 2π (full circle around Y)
+    const phi = Math.random() * Math.PI * 0.45;   // 0 to ~81° (upper hemisphere, avoid horizon)
     const radius = 200;
 
-    starPositions[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
-    starPositions[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
-    starPositions[i * 3 + 2] = radius * Math.cos(phi);
+    starPositions[i * 3] = radius * Math.sin(phi) * Math.cos(theta);     // X
+    starPositions[i * 3 + 1] = radius * Math.cos(phi);                   // Y (UP)
+    starPositions[i * 3 + 2] = radius * Math.sin(phi) * Math.sin(theta); // Z
   }
 
   starGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
@@ -135,27 +135,28 @@ export function setupScene(container: HTMLElement): void {
     ambientLight.intensity = dayNightCycle.getAmbientIntensity();
     directionalLight.intensity = dayNightCycle.getDirectionalIntensity();
 
-    // Update sun mesh
-    sunMesh.position.copy(sunPosition);
+    // Update sun mesh (follows camera so always visible in sky)
+    sunMesh.position.copy(sunPosition).add(car.position);
     // Fade sun when below horizon
-    sunMesh.material.opacity = sunPosition.y > 0 ? Math.min(1, sunPosition.y / 20) : 0;
+    (sunMesh.material as THREE.MeshBasicMaterial).opacity = sunPosition.y > 0 ? Math.min(1, sunPosition.y / 20) : 0;
 
-    // Update moon mesh (opposite side of sky from sun)
+    // Update moon mesh (opposite side of sky from sun, follows camera)
     const timeOfDay = dayNightCycle.getTimeOfDay();
     const moonTime = (timeOfDay + 0.5) % 1;
     const moonAngle = (moonTime - 0.25) * Math.PI * 2;
     const moonX = Math.sin(moonAngle) * 50;
     const moonY = Math.cos(moonAngle) * 50 + 20;
     const moonZ = 10;
-    moonMesh.position.set(moonX, moonY, moonZ);
+    moonMesh.position.set(moonX + car.position.x, moonY, moonZ + car.position.z);
 
     // Fade moon when below horizon and apply phase brightness
     const moonPhase = dayNightCycle.getMoonPhase();
     const moonBrightness = Math.abs(moonPhase - 0.5) * 2; // 0 at new moon, 1 at full moon
     const moonOpacity = moonY > 0 ? Math.min(1, moonY / 20) : 0;
-    moonMesh.material.opacity = moonOpacity * moonBrightness;
+    (moonMesh.material as THREE.MeshBasicMaterial).opacity = moonOpacity * moonBrightness;
 
-    // Update stars (fade in at night)
+    // Update stars (fade in at night, follow camera)
+    stars.position.copy(car.position);
     const isNight = dayNightCycle.isNight();
     const targetStarOpacity = isNight ? 1.0 : 0.0;
     // Smooth transition
