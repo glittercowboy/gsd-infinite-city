@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { ChunkCoord, Chunk, CHUNK_SIZE, VIEW_DISTANCE, CACHE_DISTANCE } from './types';
 import { createSeededRandom, hashCoord } from './SeededRandom';
+import { generateRoads, createRoadMeshes } from './RoadGenerator';
 
 export class ChunkManager {
   private scene: THREE.Scene;
@@ -84,6 +85,11 @@ export class ChunkManager {
     ground.receiveShadow = true;
 
     group.add(ground);
+
+    // Generate and add roads
+    const roadSegments = generateRoads(coord, rng);
+    createRoadMeshes(roadSegments, group, worldX, worldZ);
+
     this.scene.add(group);
 
     // Store chunk

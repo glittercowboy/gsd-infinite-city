@@ -18,30 +18,30 @@
 
 ## Current Position
 
-Phase: 2 of 5 (Procedural City)
-Plan: 1 of ? in current phase
+Phase: 2 of 6 (Procedural City)
+Plan: 2 of ? in current phase
 Status: In progress
-Last activity: 2025-12-15 - Completed 02-01-PLAN.md
+Last activity: 2025-12-15 - Completed 02-02-PLAN.md
 
-Progress: ██░░░░░░░░ 20%
+Progress: ██░░░░░░░░ 25%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 2
-- Average duration: 8 min
-- Total execution time: 16 min
+- Total plans completed: 3
+- Average duration: 7 min
+- Total execution time: 20 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 1. Foundation | 1 | 4 min | 4 min |
-| 2. Procedural City | 1 | 12 min | 12 min |
+| 2. Procedural City | 2 | 16 min | 8 min |
 
 **Recent Trend:**
-- Last 5 plans: 4 min, 12 min
-- Trend: Baseline
+- Last 5 plans: 4 min, 12 min, 4 min
+- Trend: Stable
 
 *Updated after each plan completion*
 
@@ -60,6 +60,7 @@ Progress: ██░░░░░░░░ 20%
 | P2 | Chunk size 64 units | Balance between granularity and draw calls |
 | P2 | View distance 3, cache 5 | Hysteresis prevents chunk thrashing |
 | P2 | Fog 100-300 units | Hides chunk edges without claustrophobia |
+| P2 | Fixed grid roads (no variation) | Roads must align across chunks; variation via districts instead |
 
 ### Deferred Issues
 
@@ -76,8 +77,12 @@ Status: ✓ Aligned
 Assessment: No work done yet - baseline alignment
 Drift notes: None
 
+### Roadmap Evolution
+
+- Phase 1.1 added: Car Speed Increase - speed up the car significantly
+
 ## Session Continuity
 
 Last session: 2025-12-15
-Stopped at: Completed 02-01-PLAN.md (chunk system)
+Stopped at: Completed 02-02-PLAN.md (road network)
 Resume file: None
