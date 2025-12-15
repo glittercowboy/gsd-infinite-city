@@ -11,8 +11,6 @@ export interface TrafficCar {
   scale: number; // Size variety 0.8-1.2
   color: THREE.Color;
   active: boolean;
-  honking: boolean;
-  honkTime: number;
 }
 
 export const TRAFFIC_CAR_COUNT = 100;

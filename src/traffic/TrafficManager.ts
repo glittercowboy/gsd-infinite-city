@@ -24,15 +24,13 @@ export class TrafficManager extends THREE.Group {
         baseSpeed: TRAFFIC_CAR_SPEED,
         scale: 1.0,
         color: new THREE.Color(0x0000ff),
-        active: false,
-        honking: false,
-        honkTime: 0
+        active: false
       });
     }
 
     // Create instanced mesh for all cars
     const geometry = new THREE.BoxGeometry(2, 1, 4);
-    const material = new THREE.MeshLambertMaterial({ color: 0x0000ff }); // Blue for AI cars
+    const material = new THREE.MeshLambertMaterial({ color: 0xffffff }); // White base for instance colors
     this.instancedMesh = new THREE.InstancedMesh(geometry, material, TRAFFIC_CAR_COUNT);
     this.instancedMesh.castShadow = true;
     this.instancedMesh.frustumCulled = false; // Instances are scattered - disable culling
@@ -64,7 +62,6 @@ export class TrafficManager extends THREE.Group {
    * Update all active cars - movement and rendering
    */
   update(deltaTime: number, playerPosition: THREE.Vector3): void {
-    const currentTime = performance.now();
     this.frameCount++;
 
     // Update car movement with distance-based update frequency
@@ -113,14 +110,10 @@ export class TrafficManager extends THREE.Group {
         }
       }
 
-      // Player avoidance and honking (reuse distanceToPlayer from update frequency check)
+      // Player avoidance (reuse distanceToPlayer from update frequency check)
       const playerInPath = this.isPlayerInPath(car, playerPosition);
 
       if (playerInPath && distanceToPlayer < 20) {
-        // Honk at player
-        car.honking = true;
-        car.honkTime = currentTime;
-
         if (distanceToPlayer < 10) {
           // Emergency brake when very close
           car.speed = 0;
@@ -128,11 +121,6 @@ export class TrafficManager extends THREE.Group {
           // Slow down when approaching
           car.speed *= 0.5;
         }
-      }
-
-      // Clear honking after 500ms
-      if (car.honking && currentTime - car.honkTime > 500) {
-        car.honking = false;
       }
 
       // Move car along its lane direction
@@ -156,12 +144,8 @@ export class TrafficManager extends THREE.Group {
       this.dummy.updateMatrix();
       this.instancedMesh.setMatrixAt(i, this.dummy.matrix);
 
-      // Visual honking indicator: flash red, otherwise use car's color
-      if (car.honking) {
-        this.instancedMesh.setColorAt(i, new THREE.Color(0xff0000)); // Red when honking
-      } else {
-        this.instancedMesh.setColorAt(i, car.color);
-      }
+      // Set car's color
+      this.instancedMesh.setColorAt(i, car.color);
     }
 
     this.instancedMesh.instanceMatrix.needsUpdate = true;
