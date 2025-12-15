@@ -9,6 +9,7 @@ export interface Chunk {
   coord: ChunkCoord;
   group: THREE.Group;
   lastVisited: number;
+  colliders: THREE.Box3[];
 }
 
 export interface RoadSegment {

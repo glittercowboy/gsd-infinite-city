@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { createCar, updateCar } from './car';
+import { createCar, updateCar, checkCollision, applyBounce } from './car';
 import { initInput, getInputState } from './input';
 import { ChunkManager } from './chunk/ChunkManager';
 
@@ -66,6 +66,13 @@ export function setupScene(container: HTMLElement): void {
 
     const input = getInputState();
     updateCar(car, input, deltaTime);
+
+    // Check collision and apply bounce
+    const colliders = chunkManager.getCollidersAt(car.position);
+    const collision = checkCollision(car, colliders);
+    if (collision) {
+      applyBounce(car, collision);
+    }
 
     // Update chunks based on car position
     chunkManager.update(car.position);

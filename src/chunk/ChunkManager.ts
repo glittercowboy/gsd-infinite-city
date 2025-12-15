@@ -5,6 +5,7 @@ import { generateRoads, createRoadMeshes } from './RoadGenerator';
 import { generateBuildings, createBuildingMeshes } from './BuildingGenerator';
 import { getDistrictType, getDistrictConfig } from './DistrictManager';
 import { generateTrees, createTreeMeshes } from './TreeGenerator';
+import { buildingToBox3, treeToBox3 } from '../collision';
 
 export class ChunkManager {
   private scene: THREE.Scene;
@@ -107,13 +108,27 @@ export class ChunkManager {
     const trees = generateTrees(coord, districtType, rng, buildings);
     createTreeMeshes(trees, group, worldX, worldZ);
 
+    // Generate collision data
+    const colliders: THREE.Box3[] = [];
+
+    // Add building colliders
+    for (const building of buildings) {
+      colliders.push(buildingToBox3(building, worldX, worldZ));
+    }
+
+    // Add tree colliders
+    for (const tree of trees) {
+      colliders.push(treeToBox3(tree, worldX, worldZ));
+    }
+
     this.scene.add(group);
 
     // Store chunk
     this.chunks.set(key, {
       coord,
       group,
-      lastVisited: performance.now()
+      lastVisited: performance.now(),
+      colliders
     });
   }
 
@@ -180,5 +195,20 @@ export class ChunkManager {
    */
   private coordToKey(coord: ChunkCoord): string {
     return `${coord.x},${coord.z}`;
+  }
+
+  /**
+   * Get colliders for the chunk containing the given position
+   */
+  public getCollidersAt(position: THREE.Vector3): THREE.Box3[] {
+    const coord: ChunkCoord = {
+      x: Math.floor(position.x / CHUNK_SIZE),
+      z: Math.floor(position.z / CHUNK_SIZE)
+    };
+
+    const key = this.coordToKey(coord);
+    const chunk = this.chunks.get(key);
+
+    return chunk ? chunk.colliders : [];
   }
 }
