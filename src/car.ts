@@ -54,11 +54,11 @@ export function createCar(): THREE.Group {
   carPhysicsMap.set(car, {
     velocity: new THREE.Vector3(),
     speed: 0,
-    acceleration: 75,
-    maxSpeed: 100,
+    acceleration: 100,
+    maxSpeed: 200,
     turnSpeed: 2.5,
     friction: 0.95,
-    boundingBox
+    boundingBox,
   });
 
   return car;
@@ -123,7 +123,10 @@ export interface CollisionResult {
  * Check collision between car and colliders
  * Returns push direction and penetration depth if collision detected, null otherwise
  */
-export function checkCollision(car: THREE.Group, colliders: THREE.Box3[]): CollisionResult | null {
+export function checkCollision(
+  car: THREE.Group,
+  colliders: THREE.Box3[]
+): CollisionResult | null {
   const physics = carPhysicsMap.get(car);
   if (!physics) return null;
 
@@ -155,13 +158,21 @@ export function checkCollision(car: THREE.Group, colliders: THREE.Box3[]): Colli
         // Push along X axis
         const carCenterX = (carBox.min.x + carBox.max.x) / 2;
         const colliderCenterX = (collider.min.x + collider.max.x) / 2;
-        pushDirection = new THREE.Vector3(carCenterX > colliderCenterX ? 1 : -1, 0, 0);
+        pushDirection = new THREE.Vector3(
+          carCenterX > colliderCenterX ? 1 : -1,
+          0,
+          0
+        );
         penetrationDepth = overlapX;
       } else {
         // Push along Z axis
         const carCenterZ = (carBox.min.z + carBox.max.z) / 2;
         const colliderCenterZ = (collider.min.z + collider.max.z) / 2;
-        pushDirection = new THREE.Vector3(0, 0, carCenterZ > colliderCenterZ ? 1 : -1);
+        pushDirection = new THREE.Vector3(
+          0,
+          0,
+          carCenterZ > colliderCenterZ ? 1 : -1
+        );
         penetrationDepth = overlapZ;
       }
 
@@ -175,7 +186,10 @@ export function checkCollision(car: THREE.Group, colliders: THREE.Box3[]): Colli
 /**
  * Apply bounce response to car
  */
-export function applyBounce(car: THREE.Group, collision: CollisionResult): void {
+export function applyBounce(
+  car: THREE.Group,
+  collision: CollisionResult
+): void {
   const physics = carPhysicsMap.get(car);
   if (!physics) return;
 
@@ -195,5 +209,7 @@ export function applyBounce(car: THREE.Group, collision: CollisionResult): void 
   physics.speed = physics.velocity.length();
 
   // Push car out of collision by actual penetration depth + small buffer
-  car.position.add(pushDirection.clone().multiplyScalar(penetrationDepth + 0.1));
+  car.position.add(
+    pushDirection.clone().multiplyScalar(penetrationDepth + 0.1)
+  );
 }
