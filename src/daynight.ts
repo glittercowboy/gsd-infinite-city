@@ -36,9 +36,10 @@ export class DayNightCycle {
     const angle = (this.timeOfDay - 0.25) * Math.PI * 2;
 
     // Sun follows arc: rises in east, peaks at noon, sets in west
-    const x = Math.sin(angle) * 50;
-    const y = Math.cos(angle) * 50 + 20; // Offset so it never goes fully below ground
-    const z = 10;
+    // Radius 150 keeps sun well above tallest buildings (60 units)
+    const x = Math.sin(angle) * 150;
+    const y = Math.cos(angle) * 150 + 50; // Min height 50 at horizon, 200 at noon
+    const z = 0;
 
     return new THREE.Vector3(x, y, z);
   }

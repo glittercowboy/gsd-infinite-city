@@ -144,9 +144,10 @@ export function setupScene(container: HTMLElement): void {
     const timeOfDay = dayNightCycle.getTimeOfDay();
     const moonTime = (timeOfDay + 0.5) % 1;
     const moonAngle = (moonTime - 0.25) * Math.PI * 2;
-    const moonX = Math.sin(moonAngle) * 50;
-    const moonY = Math.cos(moonAngle) * 50 + 20;
-    const moonZ = 10;
+    // Same radius as sun (150) to stay well above buildings
+    const moonX = Math.sin(moonAngle) * 150;
+    const moonY = Math.cos(moonAngle) * 150 + 50; // Min height 50 at horizon, 200 at peak
+    const moonZ = 0;
     moonMesh.position.set(moonX + car.position.x, moonY, moonZ + car.position.z);
 
     // Fade moon when below horizon and apply phase brightness
