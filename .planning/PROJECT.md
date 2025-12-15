@@ -1,5 +1,26 @@
 # Procedural City Driving Game
 
+## Current State (Updated: 2025-12-15)
+
+**Shipped:** v1.0 MVP (2025-12-15)
+**Status:** Production (deployed to Vercel)
+**URL:** https://youtube-gsd-demo.vercel.app
+**Codebase:** 2,040 lines TypeScript, Three.js/Vite, Vercel static hosting
+
+All v1 success criteria met:
+- [x] Procedurally generated city that spawns as you explore
+- [x] Varied districts (downtown, suburbs, industrial, parks)
+- [x] Traffic AI cars populate roads, avoid player, react to collisions
+- [x] Day/night cycle with appropriate lighting changes
+- [x] Collision detection prevents driving through buildings/objects
+- [x] Maintains playable frame rates on modern browsers
+- [x] Deployed and publicly accessible on Vercel
+
+---
+
+<details>
+<summary>Original Vision (v1.0 - Archived)</summary>
+
 ## Vision
 
 A Three.js browser-based driving game featuring a procedurally generated sprawling city. Players explore an endless urban environment with varied districts, reactive traffic, and a day/night cycle. The game captures the open-world exploration feel of GTA in a web-native package.
@@ -16,32 +37,20 @@ Building an impressive portfolio piece that showcases:
 
 The challenge is making all these systems work together smoothly while maintaining playable frame rates.
 
-## Success Criteria
-
-How we know v1 is done:
-
-- [ ] Can drive around a procedurally generated city that spawns as you explore
-- [ ] City has varied districts (downtown, suburbs, industrial, parks)
-- [ ] Traffic AI cars populate roads, avoid the player, and react to collisions
-- [ ] Day/night cycle with appropriate lighting changes
-- [ ] Collision detection prevents driving through buildings/objects
-- [ ] Maintains playable frame rates (30+ FPS) on modern browsers
-- [ ] Deployed and publicly accessible on Vercel
-
 ## Scope
 
-### Building
+### Built
 - Procedural city generation (chunk-based, spawns as you drive)
 - Varied districts with different building densities and styles
 - Different sized buildings (skyscrapers downtown, houses in suburbs)
 - Trees, parks, and environmental props
 - Arcade car physics (forgiving, fun, easy to control)
 - Collision detection for buildings, props, and other vehicles
-- Reactive traffic AI (follow roads, stop at lights, avoid player, honk)
+- Reactive traffic AI (follow roads, avoid player)
 - Day/night cycle with dynamic lighting
 - Stylized-realistic visual style with good lighting
 
-### Not Building (v1)
+### Not Built (v1)
 - No missions or objectives (pure sandbox exploration)
 - No multiplayer
 - No vehicle customization or alternative cars
@@ -49,18 +58,12 @@ How we know v1 is done:
 - No weather systems
 - No pedestrians
 
-## Context
-
-Greenfield project starting from scratch. No existing code or prototypes.
-
-Inspired by GTA-style open world driving and city exploration, adapted for the browser with procedural generation enabling infinite exploration without massive asset downloads.
-
 ## Constraints
 
-- **Platform**: Web-only, must run in modern browsers
-- **Deployment**: Vercel/Netlify static hosting
-- **Performance**: Critical constraint—many objects on screen, must maintain playable FPS
-- **Assets**: Procedural/generated where possible to minimize download size
+- **Platform**: Web-only, runs in modern browsers
+- **Deployment**: Vercel static hosting
+- **Performance**: Maintained playable FPS with many objects on screen
+- **Assets**: Procedural/generated to minimize download size
 
 ## Decisions Made
 
@@ -71,17 +74,18 @@ Inspired by GTA-style open world driving and city exploration, adapted for the b
 | Physics style | Arcade | Fun over realism, forgiving controls |
 | City scale | Infinite/chunked | Generated as you drive, endless exploration |
 | Traffic AI depth | Reactive | Balance between simple and complex—aware of player |
-| Visual style | Stylized-realistic hybrid | Good lighting, possibly cartoony, procedural-friendly |
+| Visual style | Stylized-realistic hybrid | Good lighting, procedural-friendly |
 
-## Open Questions
+## Open Questions (Resolved)
 
-Things to figure out during execution:
+- [x] Which procedural city generation algorithm? → Grid-based with simplex noise districts
+- [x] How to implement reactive traffic AI efficiently? → InstancedMesh with lane-following
+- [x] What LOD/culling strategies needed? → Distance-based update frequency
+- [x] How to handle chunk loading/unloading? → ChunkManager with view distance + cache radius
+- [x] Best approach for collision detection? → Box3 with MTV separation
 
-- [ ] Which procedural city generation algorithm works best? (WFC, L-systems, grid-based?)
-- [ ] How to implement reactive traffic AI efficiently?
-- [ ] What LOD/culling strategies needed for performance?
-- [ ] How to handle chunk loading/unloading smoothly?
-- [ ] Best approach for collision detection with many objects?
+</details>
 
 ---
 *Initialized: 2025-12-15*
+*v1.0 Shipped: 2025-12-15*
