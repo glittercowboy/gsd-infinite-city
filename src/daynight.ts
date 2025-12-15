@@ -29,16 +29,30 @@ export class DayNightCycle {
    * Sun arcs across sky from east to west
    */
   getSunPosition(): THREE.Vector3 {
-    // timeOfDay 0.25 = noon (sun overhead)
-    // timeOfDay 0.75 = midnight (moon overhead)
+    // Sun visible during day (0.1 to 0.8), synced with sky color transitions
+    // - 0.1: sunrise (horizon east)
+    // - 0.25: noon (zenith)
+    // - 0.8: sunset (horizon west)
 
-    // Convert time to angle (0 at noon = overhead)
-    const angle = (this.timeOfDay - 0.25) * Math.PI * 2;
+    const t = this.timeOfDay;
+    let angle: number;
 
-    // Sun follows arc: rises in east, peaks at noon, sets in west
-    // Radius 150 keeps sun well above tallest buildings (60 units)
+    if (t < 0.1) {
+      // Before sunrise - sun below eastern horizon
+      angle = -Math.PI / 2 - (0.1 - t) * 2;
+    } else if (t < 0.25) {
+      // Rising: 0.1 to 0.25, angle -π/2 to 0
+      angle = -Math.PI / 2 + ((t - 0.1) / 0.15) * (Math.PI / 2);
+    } else if (t < 0.8) {
+      // Falling: 0.25 to 0.8, angle 0 to +π/2
+      angle = ((t - 0.25) / 0.55) * (Math.PI / 2);
+    } else {
+      // After sunset - sun below western horizon
+      angle = Math.PI / 2 + (t - 0.8) * 2;
+    }
+
     const x = Math.sin(angle) * 150;
-    const y = Math.cos(angle) * 150 + 50; // Min height 50 at horizon, 200 at noon
+    const y = Math.cos(angle) * 150;
     const z = 0;
 
     return new THREE.Vector3(x, y, z);

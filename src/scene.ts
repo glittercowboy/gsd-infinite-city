@@ -137,23 +137,56 @@ export function setupScene(container: HTMLElement): void {
 
     // Update sun mesh (follows camera so always visible in sky)
     sunMesh.position.copy(sunPosition).add(car.position);
-    // Fade sun when below horizon
-    (sunMesh.material as THREE.MeshBasicMaterial).opacity = sunPosition.y > 0 ? Math.min(1, sunPosition.y / 20) : 0;
-
-    // Update moon mesh (opposite side of sky from sun, follows camera)
+    // Fade sun based on time of day (synced with sky colors)
     const timeOfDay = dayNightCycle.getTimeOfDay();
-    const moonTime = (timeOfDay + 0.5) % 1;
-    const moonAngle = (moonTime - 0.25) * Math.PI * 2;
-    // Same radius as sun (150) to stay well above buildings
+    let sunOpacity = 0;
+    if (timeOfDay >= 0.1 && timeOfDay <= 0.8) {
+      if (timeOfDay < 0.2) {
+        // Fade in during dawn (0.1 to 0.2)
+        sunOpacity = (timeOfDay - 0.1) / 0.1;
+      } else if (timeOfDay > 0.7) {
+        // Fade out during dusk (0.7 to 0.8)
+        sunOpacity = (0.8 - timeOfDay) / 0.1;
+      } else {
+        sunOpacity = 1;
+      }
+    }
+    (sunMesh.material as THREE.MeshBasicMaterial).opacity = sunOpacity;
+
+    // Update moon mesh (visible during night, opposite timing from sun)
+    // Moon visible 0.8 to 1.0 and 0.0 to 0.1 (nighttime)
+    let moonAngle: number;
+    if (timeOfDay >= 0.8) {
+      // Rising: 0.8 to 1.0, angle -π/2 to 0
+      moonAngle = -Math.PI / 2 + ((timeOfDay - 0.8) / 0.2) * (Math.PI / 2);
+    } else if (timeOfDay <= 0.1) {
+      // Setting: 0.0 to 0.1, angle 0 to +π/2
+      moonAngle = (timeOfDay / 0.1) * (Math.PI / 2);
+    } else {
+      // Daytime - moon below horizon
+      moonAngle = Math.PI / 2 + (timeOfDay - 0.1) * 0.5;
+    }
+
     const moonX = Math.sin(moonAngle) * 150;
-    const moonY = Math.cos(moonAngle) * 150 + 50; // Min height 50 at horizon, 200 at peak
+    const moonY = Math.cos(moonAngle) * 150;
     const moonZ = 0;
     moonMesh.position.set(moonX + car.position.x, moonY, moonZ + car.position.z);
 
-    // Fade moon when below horizon and apply phase brightness
+    // Fade moon based on time (visible at night) and phase brightness
     const moonPhase = dayNightCycle.getMoonPhase();
-    const moonBrightness = Math.abs(moonPhase - 0.5) * 2; // 0 at new moon, 1 at full moon
-    const moonOpacity = moonY > 0 ? Math.min(1, moonY / 20) : 0;
+    const moonBrightness = 0.3 + Math.abs(moonPhase - 0.5) * 1.4; // 0.3 at new moon, 1.0 at full moon
+    let moonOpacity = 0;
+    if (timeOfDay >= 0.8 || timeOfDay <= 0.1) {
+      if (timeOfDay >= 0.8 && timeOfDay < 0.85) {
+        // Fade in at dusk
+        moonOpacity = (timeOfDay - 0.8) / 0.05;
+      } else if (timeOfDay > 0.05 && timeOfDay <= 0.1) {
+        // Fade out at dawn
+        moonOpacity = (0.1 - timeOfDay) / 0.05;
+      } else {
+        moonOpacity = 1;
+      }
+    }
     (moonMesh.material as THREE.MeshBasicMaterial).opacity = moonOpacity * moonBrightness;
 
     // Update stars (fade in at night, follow camera)
