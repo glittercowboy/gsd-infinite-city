@@ -48,8 +48,8 @@ export function createCar(): THREE.Group {
   carPhysicsMap.set(car, {
     velocity: new THREE.Vector3(),
     speed: 0,
-    acceleration: 15,
-    maxSpeed: 20,
+    acceleration: 45,
+    maxSpeed: 60,
     turnSpeed: 2.5,
     friction: 0.95
   });
