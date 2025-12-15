@@ -211,7 +211,7 @@ export function setupScene(container: HTMLElement): void {
     trafficManager.update(deltaTime, car.position);
 
     // Camera follows car
-    const cameraOffset = new THREE.Vector3(0, 5, 10);
+    const cameraOffset = new THREE.Vector3(0, 3.5, 10);
     cameraOffset.applyQuaternion(car.quaternion);
     camera.position.copy(car.position).add(cameraOffset);
     camera.lookAt(car.position);
