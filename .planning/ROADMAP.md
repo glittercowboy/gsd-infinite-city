@@ -55,7 +55,7 @@ None (no Three.js/web game domain expertise available)
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 1/1 | Complete | 2025-12-15 |
-| 2. Procedural City | 0/? | Not started | - |
+| 2. Procedural City | 1/? | In progress | - |
 | 3. Driving & Collision | 0/? | Not started | - |
 | 4. Traffic AI | 0/? | Not started | - |
 | 5. Visuals & Deploy | 0/? | Not started | - |

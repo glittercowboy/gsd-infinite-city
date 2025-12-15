@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { createCar, updateCar } from './car';
 import { initInput, getInputState } from './input';
+import { ChunkManager } from './chunk/ChunkManager';
 
 export function setupScene(container: HTMLElement): void {
   // Renderer
@@ -18,10 +19,13 @@ export function setupScene(container: HTMLElement): void {
     75,
     window.innerWidth / window.innerHeight,
     0.1,
-    1000
+    400
   );
   camera.position.set(0, 5, 10);
   camera.lookAt(0, 0, 0);
+
+  // Fog
+  scene.fog = new THREE.Fog(0x87CEEB, 100, 300);
 
   // Lights
   const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
@@ -32,13 +36,8 @@ export function setupScene(container: HTMLElement): void {
   directionalLight.castShadow = true;
   scene.add(directionalLight);
 
-  // Ground
-  const groundGeometry = new THREE.PlaneGeometry(100, 100);
-  const groundMaterial = new THREE.MeshLambertMaterial({ color: 0x228B22 }); // Forest green
-  const ground = new THREE.Mesh(groundGeometry, groundMaterial);
-  ground.rotation.x = -Math.PI / 2;
-  ground.receiveShadow = true;
-  scene.add(ground);
+  // Chunk Manager
+  const chunkManager = new ChunkManager(scene, 12345);
 
   // Car
   const car = createCar();
@@ -67,6 +66,9 @@ export function setupScene(container: HTMLElement): void {
 
     const input = getInputState();
     updateCar(car, input, deltaTime);
+
+    // Update chunks based on car position
+    chunkManager.update(car.position);
 
     // Camera follows car
     const cameraOffset = new THREE.Vector3(0, 5, 10);

@@ -18,28 +18,29 @@
 
 ## Current Position
 
-Phase: 1 of 5 (Foundation)
-Plan: 1 of 1 in current phase
-Status: Phase complete
-Last activity: 2025-12-15 - Completed 01-01-PLAN.md
+Phase: 2 of 5 (Procedural City)
+Plan: 1 of ? in current phase
+Status: In progress
+Last activity: 2025-12-15 - Completed 02-01-PLAN.md
 
-Progress: █░░░░░░░░░ 10%
+Progress: ██░░░░░░░░ 20%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 1
-- Average duration: 4 min
-- Total execution time: 4 min
+- Total plans completed: 2
+- Average duration: 8 min
+- Total execution time: 16 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 1. Foundation | 1 | 4 min | 4 min |
+| 2. Procedural City | 1 | 12 min | 12 min |
 
 **Recent Trend:**
-- Last 5 plans: 4 min
+- Last 5 plans: 4 min, 12 min
 - Trend: Baseline
 
 *Updated after each plan completion*
@@ -56,6 +57,9 @@ Progress: █░░░░░░░░░ 10%
 | Init | Reactive AI (not full sim) | Balance between simple and complex |
 | P1 | WeakMap for car physics state | Clean separation of mesh from physics data |
 | P1 | Quaternion-based camera offset | Smooth following regardless of car rotation |
+| P2 | Chunk size 64 units | Balance between granularity and draw calls |
+| P2 | View distance 3, cache 5 | Hysteresis prevents chunk thrashing |
+| P2 | Fog 100-300 units | Hides chunk edges without claustrophobia |
 
 ### Deferred Issues
 
@@ -75,5 +79,5 @@ Drift notes: None
 ## Session Continuity
 
 Last session: 2025-12-15
-Stopped at: Completed 01-01-PLAN.md (Phase 1 complete)
+Stopped at: Completed 02-01-PLAN.md (chunk system)
 Resume file: None
