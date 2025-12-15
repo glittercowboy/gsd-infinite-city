@@ -67,8 +67,14 @@ export function generateBuildings(
       // Height from district config range
       const heightRange = districtConfig.maxHeight - districtConfig.minHeight;
       const height = districtConfig.minHeight + Math.floor(random.random() * heightRange);
-      // Color from district palette
-      const color = districtConfig.colors[Math.floor(random.random() * districtConfig.colors.length)];
+      // Color from district palette with subtle variation
+      const baseColor = districtConfig.colors[Math.floor(random.random() * districtConfig.colors.length)];
+      // Add slight color variation (±10% brightness)
+      const variation = 0.9 + random.random() * 0.2;
+      const r = Math.floor(((baseColor >> 16) & 0xFF) * variation);
+      const g = Math.floor(((baseColor >> 8) & 0xFF) * variation);
+      const b = Math.floor((baseColor & 0xFF) * variation);
+      const color = (r << 16) | (g << 8) | b;
 
       // Try to place without overlapping
       let attempts = 0;

@@ -18,11 +18,25 @@ export function createCar(): THREE.Group {
 
   // Body
   const bodyGeometry = new THREE.BoxGeometry(2, 1, 4);
-  const bodyMaterial = new THREE.MeshLambertMaterial({ color: 0xff0000 }); // Red
+  const bodyMaterial = new THREE.MeshLambertMaterial({ color: 0xff4500 }); // Bright orange-red
   const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
   body.position.y = 0.5;
   body.castShadow = true;
   car.add(body);
+
+  // Headlights (emissive spheres at front)
+  const headlightGeometry = new THREE.SphereGeometry(0.3, 8, 8);
+  const headlightMaterial = new THREE.MeshBasicMaterial({
+    color: 0xffff00,
+  });
+
+  const headlightLeft = new THREE.Mesh(headlightGeometry, headlightMaterial);
+  headlightLeft.position.set(-0.7, 0.5, 2.2);
+  car.add(headlightLeft);
+
+  const headlightRight = new THREE.Mesh(headlightGeometry, headlightMaterial);
+  headlightRight.position.set(0.7, 0.5, 2.2);
+  car.add(headlightRight);
 
   // Wheels
   const wheelGeometry = new THREE.CylinderGeometry(0.4, 0.4, 0.3, 16);

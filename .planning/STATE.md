@@ -18,19 +18,19 @@
 
 ## Current Position
 
-Phase: 4 of 6 (Traffic AI)
-Plan: 3 of 3 in current phase
-Status: Phase complete
-Last activity: 2025-12-15 - Completed 04-03-PLAN.md (traffic variety, intersection yielding, optimization)
+Phase: 5 of 5 (Visuals & Deploy)
+Plan: 1 of 1 in current phase
+Status: Milestone complete
+Last activity: 2025-12-15 - Completed 05-01-PLAN.md (day/night cycle, visual polish, Vercel deploy)
 
-Progress: █████████░ 90%
+Progress: ██████████ 100%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 10
-- Average duration: 7 min
-- Total execution time: 65 min
+- Total plans completed: 11
+- Average duration: 6 min
+- Total execution time: 69 min
 
 **By Phase:**
 
@@ -41,10 +41,11 @@ Progress: █████████░ 90%
 | 2. Procedural City | 4 | 29 min | 7 min |
 | 3. Driving & Collision | 1 | 9 min | 9 min |
 | 4. Traffic AI | 3 | 22 min | 7 min |
+| 5. Visuals & Deploy | 1 | 4 min | 4 min |
 
 **Recent Trend:**
-- Last 5 plans: 9 min, 9 min, 2 min, 17 min, 3 min
-- Trend: Phase 4 complete, average 7 min/plan
+- Last 5 plans: 9 min, 2 min, 17 min, 3 min, 4 min
+- Trend: Milestone complete, average 6 min/plan
 
 *Updated after each plan completion*
 
@@ -82,6 +83,9 @@ Progress: █████████░ 90%
 | P4 | 6-color car palette | Blue, green, yellow, white, silver, black - common real colors |
 | P4 | Z-lane yields to X-lane | Simple right-of-way without traffic lights |
 | P4 | Distance-based LOD updates | <100 full, 100-200 half, >200 quarter rate |
+| P5 | 2-minute day/night cycle | Demo-friendly visibility, configurable constant |
+| P5 | Smoothstep color interpolation | Prevents abrupt sky/lighting changes |
+| P5 | MeshBasicMaterial headlights | Always bright, unaffected by scene lighting |
 
 ### Deferred Issues
 
@@ -105,5 +109,5 @@ Drift notes: None
 ## Session Continuity
 
 Last session: 2025-12-15
-Stopped at: Completed 04-03-PLAN.md (Phase 4 complete)
+Stopped at: Completed 05-01-PLAN.md (Milestone complete)
 Resume file: None

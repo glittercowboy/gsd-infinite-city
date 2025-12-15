@@ -3,6 +3,7 @@ import { createCar, updateCar, checkCollision, applyBounce } from './car';
 import { initInput, getInputState } from './input';
 import { ChunkManager } from './chunk/ChunkManager';
 import { TrafficManager } from './traffic/TrafficManager';
+import { DayNightCycle } from './daynight';
 
 export function setupScene(container: HTMLElement): void {
   // Renderer
@@ -44,6 +45,9 @@ export function setupScene(container: HTMLElement): void {
   const trafficManager = new TrafficManager();
   scene.add(trafficManager);
 
+  // Day/Night Cycle
+  const dayNightCycle = new DayNightCycle();
+
   // Car
   const car = createCar();
   scene.add(car);
@@ -71,6 +75,16 @@ export function setupScene(container: HTMLElement): void {
 
     const input = getInputState();
     updateCar(car, input, deltaTime);
+
+    // Update day/night cycle
+    dayNightCycle.update(deltaTime);
+    directionalLight.position.copy(dayNightCycle.getSunPosition());
+    scene.background = dayNightCycle.getSkyColor();
+    if (scene.fog) {
+      scene.fog.color.copy(dayNightCycle.getFogColor());
+    }
+    ambientLight.intensity = dayNightCycle.getAmbientIntensity();
+    directionalLight.intensity = dayNightCycle.getDirectionalIntensity();
 
     // Check collision and apply bounce
     const colliders = chunkManager.getCollidersAt(car.position);
