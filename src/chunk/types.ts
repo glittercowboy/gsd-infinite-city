@@ -31,3 +31,19 @@ export interface BuildingData {
   height: number;
   color: number;
 }
+
+export type DistrictType = 'downtown' | 'suburbs' | 'industrial' | 'park';
+
+export interface DistrictConfig {
+  minHeight: number;
+  maxHeight: number;
+  density: number;
+  colors: number[];
+  hasBuildings: boolean;
+}
+
+export interface TreeData {
+  position: { x: number; z: number };
+  height: number;
+  radius: number;
+}

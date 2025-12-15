@@ -3,6 +3,8 @@ import { ChunkCoord, Chunk, CHUNK_SIZE, VIEW_DISTANCE, CACHE_DISTANCE } from './
 import { createSeededRandom, hashCoord } from './SeededRandom';
 import { generateRoads, createRoadMeshes } from './RoadGenerator';
 import { generateBuildings, createBuildingMeshes } from './BuildingGenerator';
+import { getDistrictType, getDistrictConfig } from './DistrictManager';
+import { generateTrees, createTreeMeshes } from './TreeGenerator';
 
 export class ChunkManager {
   private scene: THREE.Scene;
@@ -69,11 +71,17 @@ export class ChunkManager {
     // Create ground tile
     const groundGeometry = new THREE.PlaneGeometry(CHUNK_SIZE, CHUNK_SIZE);
 
+    // Get district type and config
+    const districtType = getDistrictType(coord, this.baseSeed);
+    const districtConfig = getDistrictConfig(districtType);
+
     // Use seeded random for color variation
     const chunkSeed = hashCoord(coord.x, coord.z, this.baseSeed);
     const rng = createSeededRandom(chunkSeed);
     const colorVariation = 0.9 + (rng.random() * 0.2); // +/- 10% brightness
-    const baseColor = 0x228B22; // Forest green
+
+    // Use lighter green for parks, darker green for other areas
+    const baseColor = districtType === 'park' ? 0x32CD32 : 0x228B22;
     const r = ((baseColor >> 16) & 0xff) * colorVariation;
     const g = ((baseColor >> 8) & 0xff) * colorVariation;
     const b = (baseColor & 0xff) * colorVariation;
@@ -91,9 +99,13 @@ export class ChunkManager {
     const roadSegments = generateRoads(coord, rng);
     createRoadMeshes(roadSegments, group, worldX, worldZ);
 
-    // Generate and add buildings
-    const buildings = generateBuildings(coord, roadSegments, rng);
+    // Generate and add buildings (based on district config)
+    const buildings = generateBuildings(coord, roadSegments, rng, districtConfig);
     createBuildingMeshes(buildings, group, worldX, worldZ);
+
+    // Generate and add trees (based on district type, avoiding buildings)
+    const trees = generateTrees(coord, districtType, rng, buildings);
+    createTreeMeshes(trees, group, worldX, worldZ);
 
     this.scene.add(group);
 

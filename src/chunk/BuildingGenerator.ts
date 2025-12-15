@@ -1,18 +1,9 @@
 import * as THREE from 'three';
-import { ChunkCoord, RoadSegment, BuildingData, ROAD_WIDTH, BLOCK_SIZE, BUILDING_SETBACK } from './types';
+import { ChunkCoord, RoadSegment, BuildingData, DistrictConfig, ROAD_WIDTH, BLOCK_SIZE, BUILDING_SETBACK } from './types';
 
 interface SeededRandom {
   random(): number;
 }
-
-// Building color palette - grays, tans, whites for low-poly aesthetic
-const BUILDING_COLORS = [
-  0xE8E8E8, // Light gray
-  0xD3D3D3, // Silver
-  0xBEBEBE, // Gray
-  0xC4B7A6, // Tan
-  0xDDCFC4, // Cream
-];
 
 /**
  * Generate building placement data for a chunk
@@ -21,8 +12,13 @@ const BUILDING_COLORS = [
 export function generateBuildings(
   _coord: ChunkCoord,
   _roads: RoadSegment[],
-  random: SeededRandom
+  random: SeededRandom,
+  districtConfig: DistrictConfig
 ): BuildingData[] {
+  // If district doesn't have buildings (e.g., park), return empty array
+  if (!districtConfig.hasBuildings) {
+    return [];
+  }
   const buildings: BuildingData[] = [];
 
   // The chunk has a 2x2 grid of blocks (BLOCK_SIZE = 32, CHUNK_SIZE = 64)
@@ -57,8 +53,9 @@ export function generateBuildings(
     // Skip if buildable area too small
     if (buildableWidth < 10 || buildableDepth < 10) continue;
 
-    // Place 4-8 buildings per block using simple grid
-    const numBuildings = 4 + Math.floor(random.random() * 5); // 4-8
+    // Place buildings per block, adjusted by district density
+    const baseNumBuildings = 4 + Math.floor(random.random() * 5); // 4-8
+    const numBuildings = Math.floor(baseNumBuildings * districtConfig.density);
 
     // Place buildings along the edges (facing roads)
     const placed: BuildingData[] = [];
@@ -67,11 +64,11 @@ export function generateBuildings(
       // Randomize building dimensions
       const width = 8 + Math.floor(random.random() * 9);  // 8-16
       const depth = 8 + Math.floor(random.random() * 9);  // 8-16
-      // Height uses squared random to bias toward shorter buildings
-      // Most buildings 10-25, occasional taller ones up to 60
-      const heightRandom = random.random() * random.random(); // Squared distribution
-      const height = 10 + Math.floor(heightRandom * 50); // 10-60, biased low
-      const color = BUILDING_COLORS[Math.floor(random.random() * BUILDING_COLORS.length)];
+      // Height from district config range
+      const heightRange = districtConfig.maxHeight - districtConfig.minHeight;
+      const height = districtConfig.minHeight + Math.floor(random.random() * heightRange);
+      // Color from district palette
+      const color = districtConfig.colors[Math.floor(random.random() * districtConfig.colors.length)];
 
       // Try to place without overlapping
       let attempts = 0;

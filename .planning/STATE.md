@@ -18,19 +18,19 @@
 
 ## Current Position
 
-Phase: 2 of 6 (Procedural City)
-Plan: 3 of ? in current phase
-Status: In progress
-Last activity: 2025-12-15 - Completed 02-03-PLAN.md (building generation)
+Phase: 2 of 6 (Procedural City) - COMPLETE
+Plan: 4 of 4 in current phase
+Status: Phase complete
+Last activity: 2025-12-15 - Completed 02-04-PLAN.md (districts & trees)
 
-Progress: ███░░░░░░░ 40%
+Progress: █████░░░░░ 50%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 5
-- Average duration: 5 min
-- Total execution time: 25 min
+- Total plans completed: 6
+- Average duration: 6 min
+- Total execution time: 34 min
 
 **By Phase:**
 
@@ -38,10 +38,10 @@ Progress: ███░░░░░░░ 40%
 |-------|-------|-------|----------|
 | 1. Foundation | 1 | 4 min | 4 min |
 | 1.1 Car Speed | 1 | <1 min | <1 min |
-| 2. Procedural City | 3 | 20 min | 7 min |
+| 2. Procedural City | 4 | 29 min | 7 min |
 
 **Recent Trend:**
-- Last 5 plans: 4 min, 12 min, 4 min, <1 min, 4 min
+- Last 5 plans: 12 min, 4 min, <1 min, 4 min, 9 min
 - Trend: Stable
 
 *Updated after each plan completion*
@@ -64,6 +64,9 @@ Progress: ███░░░░░░░ 40%
 | P2 | Fixed grid roads (no variation) | Roads must align across chunks; variation via districts instead |
 | P2 | Squared height distribution | Most buildings short (10-25), occasional towers (up to 60) |
 | P2 | One InstancedMesh per chunk | Batches all buildings into single draw call |
+| P2 | Simplex noise for districts | Two-frequency noise maps chunk position to district type |
+| P2 | District thresholds | <-0.3 park, -0.3-0.1 suburbs, 0.1-0.5 industrial, >0.5 downtown |
+| P2 | Tree placement with collision | Trees avoid roads (0,32,64) and building footprints |
 
 ### Deferred Issues
 
@@ -87,5 +90,5 @@ Drift notes: None
 ## Session Continuity
 
 Last session: 2025-12-15
-Stopped at: Completed 02-03-PLAN.md (building generation)
+Stopped at: Completed 02-04-PLAN.md (districts & trees) - Phase 2 COMPLETE
 Resume file: None
