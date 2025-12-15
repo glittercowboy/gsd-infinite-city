@@ -48,6 +48,50 @@ export function setupScene(container: HTMLElement): void {
   // Day/Night Cycle
   const dayNightCycle = new DayNightCycle();
 
+  // Celestial objects
+  // Sun mesh
+  const sunGeometry = new THREE.SphereGeometry(2, 16, 16);
+  const sunMaterial = new THREE.MeshBasicMaterial({
+    color: 0xffff00,
+    transparent: true
+  });
+  const sunMesh = new THREE.Mesh(sunGeometry, sunMaterial);
+  scene.add(sunMesh);
+
+  // Moon mesh
+  const moonGeometry = new THREE.SphereGeometry(1.5, 16, 16);
+  const moonMaterial = new THREE.MeshBasicMaterial({
+    color: 0xcccccc,
+    transparent: true
+  });
+  const moonMesh = new THREE.Mesh(moonGeometry, moonMaterial);
+  scene.add(moonMesh);
+
+  // Star field
+  const starCount = 500;
+  const starGeometry = new THREE.BufferGeometry();
+  const starPositions = new Float32Array(starCount * 3);
+
+  for (let i = 0; i < starCount; i++) {
+    // Random points on a sphere (radius 200)
+    const theta = Math.random() * Math.PI * 2;
+    const phi = Math.acos(2 * Math.random() - 1);
+    const radius = 200;
+
+    starPositions[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
+    starPositions[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
+    starPositions[i * 3 + 2] = radius * Math.cos(phi);
+  }
+
+  starGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+  const starMaterial = new THREE.PointsMaterial({
+    color: 0xffffff,
+    size: 0.5,
+    transparent: true
+  });
+  const stars = new THREE.Points(starGeometry, starMaterial);
+  scene.add(stars);
+
   // Car
   const car = createCar();
   scene.add(car);
@@ -78,13 +122,45 @@ export function setupScene(container: HTMLElement): void {
 
     // Update day/night cycle
     dayNightCycle.update(deltaTime);
-    directionalLight.position.copy(dayNightCycle.getSunPosition());
+
+    // Update directional light (sun/moon)
+    const sunPosition = dayNightCycle.getSunPosition();
+    directionalLight.position.copy(sunPosition);
+
+    // Update scene atmosphere
     scene.background = dayNightCycle.getSkyColor();
     if (scene.fog) {
       scene.fog.color.copy(dayNightCycle.getFogColor());
     }
     ambientLight.intensity = dayNightCycle.getAmbientIntensity();
     directionalLight.intensity = dayNightCycle.getDirectionalIntensity();
+
+    // Update sun mesh
+    sunMesh.position.copy(sunPosition);
+    // Fade sun when below horizon
+    sunMesh.material.opacity = sunPosition.y > 0 ? Math.min(1, sunPosition.y / 20) : 0;
+
+    // Update moon mesh (opposite side of sky from sun)
+    const timeOfDay = dayNightCycle.getTimeOfDay();
+    const moonTime = (timeOfDay + 0.5) % 1;
+    const moonAngle = (moonTime - 0.25) * Math.PI * 2;
+    const moonX = Math.sin(moonAngle) * 50;
+    const moonY = Math.cos(moonAngle) * 50 + 20;
+    const moonZ = 10;
+    moonMesh.position.set(moonX, moonY, moonZ);
+
+    // Fade moon when below horizon and apply phase brightness
+    const moonPhase = dayNightCycle.getMoonPhase();
+    const moonBrightness = Math.abs(moonPhase - 0.5) * 2; // 0 at new moon, 1 at full moon
+    const moonOpacity = moonY > 0 ? Math.min(1, moonY / 20) : 0;
+    moonMesh.material.opacity = moonOpacity * moonBrightness;
+
+    // Update stars (fade in at night)
+    const isNight = dayNightCycle.isNight();
+    const targetStarOpacity = isNight ? 1.0 : 0.0;
+    // Smooth transition
+    starMaterial.opacity += (targetStarOpacity - starMaterial.opacity) * deltaTime * 2;
+    starMaterial.opacity = Math.max(0, Math.min(1, starMaterial.opacity));
 
     // Check collision and apply bounce
     const colliders = chunkManager.getCollidersAt(car.position);

@@ -13,10 +13,10 @@ const HALF_ROAD = ROAD_WIDTH / 2;
 /**
  * Check if position is inside a road
  */
-function isInRoad(x: number, z: number): boolean {
+function isInRoad(x: number, z: number, radius: number = 0): boolean {
   for (const roadPos of ROAD_POSITIONS) {
-    if (Math.abs(x - roadPos) < HALF_ROAD) return true;
-    if (Math.abs(z - roadPos) < HALF_ROAD) return true;
+    if (Math.abs(x - roadPos) < HALF_ROAD + radius) return true;
+    if (Math.abs(z - roadPos) < HALF_ROAD + radius) return true;
   }
   return false;
 }
@@ -88,7 +88,7 @@ export function generateTrees(
       z = random.random() * CHUNK_SIZE;
 
       // Check if position is valid (not in road, not overlapping buildings)
-      if (!isInRoad(x, z) && !overlapsBuilding(x, z, radius, buildings)) {
+      if (!isInRoad(x, z, radius) && !overlapsBuilding(x, z, radius, buildings)) {
         validPosition = true;
         break;
       }

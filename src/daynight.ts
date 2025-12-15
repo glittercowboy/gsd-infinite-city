@@ -133,4 +133,29 @@ export class DayNightCycle {
   private lerpColor(color1: THREE.Color, color2: THREE.Color, t: number): THREE.Color {
     return new THREE.Color().lerpColors(color1, color2, t);
   }
+
+  /**
+   * Get moon phase (0-1)
+   * Uses 8-day lunar cycle for visible phase changes
+   */
+  getMoonPhase(): number {
+    // Create an 8-day cycle: timeOfDay advances by 1.0 per full day/night cycle
+    // We want ~8 phases, so use a slower counter
+    const lunarCycle = (this.timeOfDay * 8) % 1;
+    return lunarCycle;
+  }
+
+  /**
+   * Check if it's currently night time
+   */
+  isNight(): boolean {
+    return this.timeOfDay > 0.8 || this.timeOfDay < 0.1;
+  }
+
+  /**
+   * Get current time of day (0-1)
+   */
+  getTimeOfDay(): number {
+    return this.timeOfDay;
+  }
 }
